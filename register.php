@@ -8,6 +8,9 @@ $name = $_POST['registerName'];
 $email = $_POST['registerEmail'];
 $password = $_POST['registerPassword'];
 
+// Encrypt the password with the server's public key
+$encryptedPassword = shell_exec("echo '$password' | gpg --encrypt --armor --recipient 'server@example.com'");
+
 $userExists = $db->selectOne('users', "email = '$email'");
 if ($userExists) {
     echo "User with this email already exists!";
@@ -15,7 +18,7 @@ if ($userExists) {
     $data = array(
         'name' => $name,
         'email' => $email,
-        'password' => $password // Note: You should hash the password before storing it in the database for security
+        'password' => $encryptedPassword
     );
     $db->insert('users', $data);
     echo "Registration successful!";
